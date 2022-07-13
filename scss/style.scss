@@ -1,0 +1,174 @@
+/* Mixin
+-------------------------------------------------- */
+
+@mixin flex ($justify: flex-start, $align: flex-start, $wrap: nowrap) {
+  display: flex;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+/* Main
+-------------------------------------------------- */
+
+[v-cloak] {
+  display: none !important;
+}
+
+.container {
+  width: 100%;
+  .upload {
+    @include flex (center,center,wrap);
+    align-content: center;
+    width: 100%;
+    height: 100vh;
+    #dragZone {
+      @include flex (center,center,wrap);
+      width: 100%;
+      height: 80vh;
+      background-color: #eaeaea;
+      overflow-y: scroll;
+      .primary-upload {
+        @include flex (center,center,wrap);
+        width: 100%;
+        height: fit-content;
+        p {
+          width: 100%;
+          text-align: center;
+        }
+        .form {
+          position: relative;
+          width: 100%;
+          #formFile {
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 114px;
+            height: 48px;
+            z-index: 100;
+            font-size: 0;
+            opacity: 0;
+            cursor: pointer;
+          }
+          .formBtn {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+        }  
+      }
+      .secondary-upload {
+        width: 100%;
+        height: 70px;
+        .form {
+          @include flex ();
+          position: relative;
+          width: 100%;
+          #formFile2 {
+            // border: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            z-index: 100;
+            font-size: 0;
+            cursor: pointer;
+          }
+          .formBtn {
+            @include flex (center,center);
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 40px;
+            background-color: #6c757d;
+            color: #fff;
+          }
+        }  
+      }
+      .preview-set {
+        @include flex (center,flex-start,wrap);
+        width: 100%;
+        min-height: calc(100% - 70px);
+        padding: 20px;
+        .preview-item {
+          width: calc((100% - 60px) / 6);
+          height: fit-content;
+          margin: 5px;
+          padding: 12px;
+          background-color: #fff;
+          box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+          .preview-img {
+            @include flex (flex-start,center);
+            width: 170px;
+            height: 170px;
+            border-bottom: 1px dashed #ddd;
+            -webkit-user-drag: none; 
+            user-select: none;
+            img {
+              width: 100%;
+              height: auto;
+            }
+          }
+          .preview-content {
+            padding-top: 12px;
+            p {
+              margin: 0;
+              font-size: 14px;
+              color: #565656;
+            }
+          }
+        }
+      }
+    }
+    .hint {
+      width: 100%;
+      text-align: center;
+    }  
+  }
+  .download {
+    @include flex (flex-start, center);
+    width: 100%;
+    height: 100vh;
+    .block {
+      @include flex (flex-start, center, wrap);
+      align-content: center;
+      width: 50%;
+      height: 100%;
+      margin-right: 20px;
+      h2 {
+        width: 100%;
+        text-align: center;
+      }
+      .infoZone {
+        width: 100%;
+        height: 80vh;
+        background-color: #eaeaea;
+        padding: 28px;
+        overflow-y: scroll;
+        ul {
+          padding-inline-start: 0;
+          li {
+            list-style: none;
+            width: 100%;
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+          }
+        }
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
