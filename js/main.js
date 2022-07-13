@@ -234,10 +234,19 @@ const App = {
     }
     
     async function uploadFile() {
-      await uploadToFirebase();
-      await uploadToImgur(filesSet.value.length);
-      filesSet.value = [];
-      progressModal.show();
+      if(filesSet.value.length == 0) {
+        Swal.fire({
+          title: '請先選擇檔案',
+          icon: 'error',
+          confirmButtonText: '關閉'
+        })
+      }
+      else {
+        await uploadToFirebase();
+        await uploadToImgur(filesSet.value.length);
+        filesSet.value = [];
+        progressModal.show();  
+      }
     }
 
     // Firebase 檔案上傳
