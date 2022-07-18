@@ -364,6 +364,7 @@ const App = {
       };
 
       progress.value = 0;
+      completeSet = [];
       
       // 一次上傳多個圖檔
       Object.keys(filesSet.value).forEach(item => {
