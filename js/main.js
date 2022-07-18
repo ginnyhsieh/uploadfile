@@ -37,6 +37,7 @@ const App = {
       errorMessageSet.value.splice(0, errorMessageSet.value.length);
       preventDefault(event);
       files.value = event.target.files || event.dataTransfer.files;
+      
       let test = await new Promise((resolve) => {
         Object.keys(files.value).forEach(item => {
           resolve(checkFile(files.value[item])) ;
@@ -56,16 +57,17 @@ const App = {
       event.target.value = ''; // 將 input 那裡的檔案資料清空。避免 drag 更新檔案後，input 因保有舊資料而無法觸發 change 事件
     }
 
+
     async function checkFile(singleFile) {
       let message = [];
-
+      
       // 檢查檔案大小
-      const maxFileSize = 1024; // 1M = 1024KB
-      const fileSizeKB = singleFile.size / 1024; // 單位：KB
-      const isValidSize = fileSizeKB <= maxFileSize;
-      if (!isValidSize) {
-        message.push("檔案大小不能超過 1M");
-      }
+      // const maxFileSize = 3072; // 1M = 1024KB
+      // const fileSizeKB = singleFile.size / 1024; // 單位：KB
+      // const isValidSize = fileSizeKB <= maxFileSize;
+      // if (!isValidSize) {
+      //   message.push("檔案大小不能超過 3M");
+      // }
 
       // 檢查檔案格式
       const allowFileType = ['image/jpg','image/jpeg','image/png','heic','heif'];
@@ -87,6 +89,58 @@ const App = {
         })
         return newFile;
       }
+
+      // 壓縮圖片長寬
+      async function compressImage(singleFile) {
+        let src = await getPreviewSrc(singleFile);
+        let info = await new Promise((resolve) => {
+          let image = new Image();
+          image.src = src;
+          image.onload = function() {
+            let canvas = document.createElement('canvas');
+            let context = canvas.getContext('2d');
+            let imageWidth = 800;
+            let imageHeight = 800;
+            if(image.width >= imageWidth || image.height >= imageWidth) {
+              if(image.width >= image.height) {
+                imageHeight = image.height * (imageWidth / image.width);
+              }
+              else {
+                imageWidth = image.width * (imageHeight / image.height);
+              }
+              canvas.width = imageWidth;
+              canvas.height = imageHeight;
+              context.fillStyle = '#fff';
+              context.fillRect(0, 0, canvas.width, canvas.height);
+              context.drawImage(image, 0, 0, imageWidth, imageHeight);
+              let imageData = {
+                // 再變成"image/jpg"
+                base64: canvas.toDataURL(singleFile.type || "image/jpeg"),
+                fileName: singleFile.name
+              }
+              dataURLtoFile(imageData);
+              function dataURLtoFile(imageData){
+                let arr = imageData.base64.split(','), 
+                    mime = arr[0].match(/:(.*?);/)[1],
+                    bstr = atob(arr[1]), n = bstr.length, 
+                    u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+                    var newFile = new File([u8arr], imageData.fileName, {type:mime});
+                    newFile.tempImg = imageData.base64;
+                    resolve(newFile);
+              }
+            }
+            else {
+              resolve(singleFile);
+            }
+          };
+        });
+        return info;
+      }
+      let tempFile = await compressImage(singleFile);
+      singleFile = tempFile;  
 
       // 檢查圖片寬高
       const maxFileWidth = 6000;
@@ -170,7 +224,7 @@ const App = {
       });
       cropper.value.getCropBlob(data => {
         let newFile = new File([data], name, {
-          type: data.type,
+          type: cropFiles.value[0].type,
         })
         newFile.width = cropper.value.cropW;
         newFile.height = cropper.value.cropH;
@@ -242,7 +296,7 @@ const App = {
         })
       }
       else {
-        await uploadToFirebase();
+        // await uploadToFirebase();
         await uploadToImgur(filesSet.value.length);
         filesSet.value = [];
         progressModal.show();  

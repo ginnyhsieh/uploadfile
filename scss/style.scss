@@ -140,7 +140,7 @@
     .block {
       @include flex (flex-start, center, wrap);
       align-content: center;
-      width: 50%;
+      width: 100%;
       height: 100%;
       margin-right: 20px;
       h2 {
@@ -154,14 +154,16 @@
         padding: 28px;
         overflow-y: scroll;
         ul {
+          @include flex (flex-start, flex-start, wrap);
           padding-inline-start: 0;
           li {
             list-style: none;
-            width: 100%;
+            width: calc((100% - 60px) / 6);
             background-color: #fff;
             margin-bottom: 10px;
+            margin-right: 10px;
             padding: 10px;
-            border-radius: 6px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
           }
         }
       }
