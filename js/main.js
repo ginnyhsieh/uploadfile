@@ -480,19 +480,28 @@ const App = {
     })
     
     function downloadFile() {
-      console.log(checkDownload.value[0].link);
-      checkDownload.value.forEach((item,index) => {
-        setTimeout(async() => {
-          let response = await fetch(item.link);
-          let blob = await response.blob();
-          let objectUrl = window.URL.createObjectURL(blob);
-          let a = document.createElement("a");
-          a.href = objectUrl;
-          a.download = item.title;
-          a.click();
-          a.remove();  
-        }, 1000 * index)
-      }) 
+      if(checkDownload.value.length == 0) {
+        Swal.fire({
+          title: '請先選擇檔案',
+          icon: 'error',
+          confirmButtonText: '關閉'
+        })
+      }
+      else {
+        checkDownload.value.forEach((item,index) => {
+          setTimeout(async() => {
+            let response = await fetch(item.link);
+            let blob = await response.blob();
+            let objectUrl = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = objectUrl;
+            a.download = item.title;
+            a.click();
+            a.remove();  
+          }, 1000 * index)
+        }) 
+      }
+      
     }
 
 
