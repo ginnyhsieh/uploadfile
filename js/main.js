@@ -457,7 +457,7 @@ const App = {
         method: 'GET',
         url: 'https://api.imgur.com/3/album/' + album + '/images',
         headers: {
-          Authorization: 'Bearer ' + token
+          Authorization: 'Bearer ' + token,
         },
       };
       
@@ -466,6 +466,35 @@ const App = {
       })
     }
     getFromImgur();
+
+    // 下載檔案
+    let selectAll = Vue.ref(false);
+    let checkDownload = Vue.ref([]);
+    Vue.watch(selectAll, () => {
+      if(selectAll.value) {
+        checkDownload.value = imgur.value;
+      }
+      else {
+        checkDownload.value = [];
+      }
+    })
+    
+    function downloadFile() {
+      console.log(checkDownload.value[0].link);
+      checkDownload.value.forEach((item,index) => {
+        setTimeout(async() => {
+          let response = await fetch(item.link);
+          let blob = await response.blob();
+          let objectUrl = window.URL.createObjectURL(blob);
+          let a = document.createElement("a");
+          a.href = objectUrl;
+          a.download = item.title;
+          a.click();
+          a.remove();  
+        }, 1000 * index)
+      }) 
+    }
+
 
     return {
       files,
@@ -480,13 +509,16 @@ const App = {
       progress,
       firebase,
       imgur,
+      checkDownload,
+      selectAll,
       preventDefault,
       loadFile,
       cropImage,
       realTime,
       uploadFile,
       uploadToFirebase,
-      uploadToImgur
+      uploadToImgur,
+      downloadFile
     };
   },
 };

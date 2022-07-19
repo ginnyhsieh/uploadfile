@@ -102,14 +102,20 @@
       </div> -->
       <div class="block">
         <h2>Imgur</h2>  
+        <input type="checkbox" v-model="selectAll" class="form-check-input" style="margin-top: 0; margin-right: 4px;">
+        <label class="form-check-label">全選</label>
         <div class="infoZone">
           <ul>
             <li v-for="item in imgur">
-              <a :href="`https://imgur.com/${item.id}`"><img :src="item.link" title="source: imgur.com" width="40" height="40" style="margin-right: 4px;" /></a>
-              {{item.title}}
+              <span style="display: flex; flex-wrap: nowrap; align-items: center;">
+                <a :href="`https://imgur.com/${item.id}`" target="_blank"><img :src="item.link" title="source: imgur.com" width="40" height="40" style="margin-right: 4px;" /></a>
+                <label for="selectFile" class="form-check-label" style="overflow: hidden; text-overflow: ellipsis; width: 100px;">{{item.title}}</label>  
+              </span>
+              <input id="selectFile" class="form-check-input" type="checkbox" v-model="checkDownload" :value="item" style="width: 24px; height: 24px;">
             </li>
           </ul>
         </div>
+        <button type="button" class="btn btn-secondary btn-lg mt-3" @click="downloadFile()">下載</button>
       </div>
       
     </section>

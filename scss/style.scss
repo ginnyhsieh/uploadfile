@@ -134,15 +134,27 @@
     }  
   }
   .download {
-    @include flex (flex-start, center);
+    @include flex (flex-start, center, wrap);
     width: 100%;
     height: 100vh;
     .block {
-      @include flex (flex-start, center, wrap);
+      @include flex (center, center, wrap);
       align-content: center;
       width: 100%;
       height: 100%;
       margin-right: 20px;
+      .form-check-input{
+        border: 2px solid #ccc;
+        cursor: pointer;
+        &:checked {
+          background-color: #ccc;
+          border-color: #ccc;
+        }
+        &:focus {
+          box-shadow: 0 0 0 0;
+          border-color: #ccc;
+        }
+      }
       h2 {
         width: 100%;
         text-align: center;
@@ -157,6 +169,7 @@
           @include flex (flex-start, flex-start, wrap);
           padding-inline-start: 0;
           li {
+            @include flex (space-between, center);
             list-style: none;
             width: calc((100% - 60px) / 6);
             background-color: #fff;
