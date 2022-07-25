@@ -71,10 +71,40 @@ const App = {
 
       // 檢查檔案格式
       const allowFileType = ['image/jpg','image/jpeg','image/png','heic','heif'];
-      const fileType = singleFile.type || singleFile.name.split('.')[1];
-      const isValidType = allowFileType.includes(fileType)
+      const fileType = await checkType(singleFile);
+      const isValidType = allowFileType.includes(fileType);
       if (!isValidType) {
         message.push("檔案格式需為 jpg / png / heic / heif");
+      }
+
+      async function checkType(singleFile) {
+        const reader = new FileReader(); // HTML5 原生取得檔案資訊的物件
+        reader.readAsArrayBuffer(singleFile);
+        let type = await new Promise ((resolve) => {
+          reader.addEventListener("load", function() {
+            const unit8 = new Uint8Array(reader.result);
+            let header = '';
+            unit8.forEach(item => {
+              header += item.toString(16);
+            })
+            if(header.includes('ffd8ffdb') || header.includes('ffd8ffe0') || header.includes('ffd8ffee') || header.includes('ffd8ffe1') || header.includes('ffd8ffe0') ) {
+              resolve('image/jpg');
+            }
+            else if(header.includes('89504e47')) {
+              resolve('image/png');
+            }
+            else if(header.includes('68656963')) {
+              resolve('heic');
+            }
+            else if(header.includes('68656966')) {
+              resolve('heif');
+            }
+            else {
+              resolve('unknown');
+            }
+          });  
+        })
+        return type;
       }
 
       // 轉檔
@@ -89,6 +119,7 @@ const App = {
         })
         return newFile;
       }
+
 
       // 壓縮圖片長寬
       async function compressImage(singleFile) {
@@ -115,7 +146,7 @@ const App = {
               context.drawImage(image, 0, 0, imageWidth, imageHeight);
               let imageData = {
                 // 再變成"image/jpg"
-                base64: canvas.toDataURL(singleFile.type || "image/jpeg"),
+                base64: canvas.toDataURL(fileType || "image/jpeg"),
                 fileName: singleFile.name
               }
               dataURLtoFile(imageData);
@@ -139,8 +170,6 @@ const App = {
         });
         return info;
       }
-      let tempFile = await compressImage(singleFile);
-      singleFile = tempFile;  
 
       // 檢查圖片寬高
       const maxFileWidth = 6000;
@@ -167,8 +196,10 @@ const App = {
         }
       }
 
-      // 當檔案格式正確時，再來檢查圖片寬高
+      // 當檔案格式正確時，再來壓縮圖片和檢查圖片寬高
       if (isValidType) {
+        let tempFile = await compressImage(singleFile);
+        singleFile = tempFile;
         await checkFileWidthHeight(singleFile);
       }
       
@@ -177,7 +208,6 @@ const App = {
         message.forEach(item => {
           errorMessageSet.value.push(item);
         })
-        console.log(errorMessageSet.value);
       }
       else if (errorMessageSet.value.length != 0) {
         // 當有錯誤訊息時，淨空 cropFiles 剪裁陣列
