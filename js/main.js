@@ -146,9 +146,10 @@ const App = {
               context.drawImage(image, 0, 0, imageWidth, imageHeight);
               let imageData = {
                 // 再變成"image/jpg"
-                base64: canvas.toDataURL(fileType || "image/jpeg"),
+                base64: canvas.toDataURL(singleFile.type || "image/jpeg"),
                 fileName: singleFile.name
               }
+              console.log(fileType, imageData)
               dataURLtoFile(imageData);
               function dataURLtoFile(imageData){
                 let arr = imageData.base64.split(','), 
