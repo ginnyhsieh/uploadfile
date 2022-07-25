@@ -88,7 +88,7 @@ const App = {
               header += item.toString(16);
             })
             if(header.includes('ffd8ffdb') || header.includes('ffd8ffe0') || header.includes('ffd8ffee') || header.includes('ffd8ffe1') || header.includes('ffd8ffe0') ) {
-              resolve('image/jpg');
+              resolve('image/jpeg');
             }
             else if(header.includes('89504e47')) {
               resolve('image/png');
